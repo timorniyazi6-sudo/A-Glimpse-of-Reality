@@ -45,7 +45,7 @@
         .manifesto-body { color: #aaa; font-size: 13px; line-height: 1.7; margin-top: 20px; }
         .manifesto-credits { margin-top: 20px; color: #ff0000; font-weight: 900; font-size: 12px; letter-spacing: 1px; }
 
-        /* SAĞ SIDEBAR (DOSYA DETAYLARI) */
+        /* SAĞ SIDEBAR */
         #sidebar { 
             position: fixed; top: 0; right: -500px; width: 450px; height: 100%; 
             background: rgba(5, 5, 5, 0.98); border-left: 2px solid #ff0000;
@@ -55,9 +55,17 @@
         #sidebar.active { right: 0; }
         .close-btn { color: #ff0000; cursor: pointer; float: right; font-size: 35px; margin-top: -15px; }
 
+        /* GÖRSEL ALANI */
+        #s-image-container {
+            width: 100%; height: 220px; background: #000; border: 1px solid #333;
+            margin-bottom: 15px; display: none; align-items: center; justify-content: center; overflow: hidden;
+        }
+        #s-image-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.4s; }
+        #s-image-container img:hover { opacity: 1; }
+
         #ai-prediction-box {
             background: #1a0000; border-left: 4px solid #ff0000;
-            padding: 15px; margin: 20px 0; font-style: italic; color: #ffcccc; font-size: 13px;
+            padding: 15px; margin: 15px 0; font-style: italic; color: #ffcccc; font-size: 13px;
         }
 
         /* AI ANALİZ PANELİ */
@@ -116,8 +124,13 @@
     <div id="sidebar">
         <span class="close-btn" onclick="closeAllPanels()">&times;</span>
         <div id="sidebar-content">
-            <h2 id="s-title" style="color: #ff0000; font-size: 26px; font-weight: 900;">VERİ</h2>
+            <div id="s-image-container">
+                <img id="s-image" src="" alt="Evidence">
+            </div>
+
+            <h2 id="s-title" style="color: #ff0000; font-size: 26px; font-weight: 900; margin-top: 0;">VERİ</h2>
             <div id="s-date" style="color: #444; font-size: 14px; margin-bottom: 20px;"></div>
+            
             <div id="ai-prediction-box">
                 <strong>PROJECTION:</strong> <span id="s-prediction"></span>
             </div>
@@ -189,10 +202,22 @@
 
         function updateSidebar(item) {
             lastSelected = item;
+            
+            // Başlık ve Tarih
             document.getElementById('s-title').innerText = item.name[currentLang];
             document.getElementById('s-date').innerText = "YEAR: " + item.start;
             document.getElementById('s-prediction').innerText = item.ai_prediction[currentLang];
             document.getElementById('ai-result-text').innerText = "Analiz için motoru başlatın.";
+
+            // Resim Güncelleme
+            const imgBox = document.getElementById('s-image-container');
+            const img = document.getElementById('s-image');
+            if (item.q10_img) {
+                img.src = item.q10_img;
+                imgBox.style.display = 'flex';
+            } else {
+                imgBox.style.display = 'none';
+            }
             
             let html = "";
             const d = item.details[currentLang];
@@ -216,7 +241,7 @@
             btn.disabled = true;
 
             try {
-                const prompt = `Analiz Et: ${lastSelected.name[currentLang]}. Detaylar: ${JSON.stringify(lastSelected.details[currentLang])}. Bu olayın idari suç ve küresel etkisini profesyonel bir dille açıkla.`;
+                const prompt = `Profesyonel bir adli analiz uzmanı olarak şu olayı değerlendir: ${lastSelected.name[currentLang]}. Detaylar: ${JSON.stringify(lastSelected.details[currentLang])}. Bu vakanın idari suç boyutunu ve tarihteki gerçek yerini kısa, sarsıcı ve net şekilde Türkçe açıkla.`;
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -225,7 +250,7 @@
                 const data = await response.json();
                 resText.innerText = data.candidates[0].content.parts[0].text;
             } catch (err) {
-                resText.innerText = "Bağlantı hatası.";
+                resText.innerText = "Sistem meşgul veya bağlantı hatası.";
             } finally {
                 resText.style.display = 'block';
                 loader.style.display = 'none';
