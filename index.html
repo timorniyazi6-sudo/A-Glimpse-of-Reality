@@ -14,7 +14,7 @@
         body { margin: 0; padding: 0; background: #050505; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
         #map { height: 100vh; width: 100vw; background: #000; cursor: crosshair; }
 
-        /* SOL ÜST: DİL VE ZOOM KONTROLLERİ */
+        /* SOL ÜST: DİL VE ZOOM */
         #left-controls {
             position: fixed; top: 20px; left: 20px; z-index: 10001;
             display: flex; flex-direction: column; gap: 10px;
@@ -29,21 +29,40 @@
             font-weight: 900; transition: 0.3s; font-size: 14px; outline: none;
         }
         .lang-btn.active, .zoom-btn:hover { color: #ff0000; text-shadow: 0 0 8px #ff0000; }
-        .zoom-btn { font-size: 20px; border-top: 1px solid #222; padding-top: 5px; }
 
-        /* MANİFESTO PANELİ */
+        /* MANİFESTO PANELİ (MOBİL UYUMLU) */
         #manifesto-panel {
             position: fixed; bottom: 20px; left: 20px; width: 350px;
             background: rgba(5, 5, 5, 0.98); border: 2px solid #ff0000;
-            padding: 20px; z-index: 10005; transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            padding: 20px; z-index: 10005; transition: 0.5s ease;
             cursor: pointer; overflow: hidden; box-shadow: 0 0 30px #000;
         }
-        #manifesto-panel.expanded {
-            width: 45vw; height: 70vh; cursor: default; overflow-y: auto;
+        
+        /* MOBİL İÇİN KÜÇÜK KUTU (ÜÇ ÇİZGİLİ) */
+        @media (max-width: 768px) {
+            #manifesto-panel {
+                width: 40px; height: 40px; padding: 0;
+                display: flex; align-items: center; justify-content: center;
+                border-radius: 4px; overflow: hidden;
+            }
+            #manifesto-panel::before {
+                content: "\f0c9"; font-family: "Font Awesome 5 Free"; font-weight: 900;
+                color: #ff0000; font-size: 20px;
+            }
+            #manifesto-panel #m-quote, #manifesto-panel #m-body, #manifesto-panel #m-hint { display: none; }
+            
+            #manifesto-panel.expanded {
+                width: 90vw; height: 80vh; padding: 20px; left: 5vw; bottom: 10vh;
+                display: block; border-radius: 8px;
+            }
+            #manifesto-panel.expanded::before { display: none; }
+            #manifesto-panel.expanded #m-quote, #manifesto-panel.expanded #m-body { display: block; }
         }
-        .manifesto-quote { color: #fff; font-size: 15px; font-weight: bold; display: block; margin-bottom: 10px; border-left: 4px solid #ff0000; padding-left: 12px; }
+
+        #manifesto-panel.expanded { width: 45vw; height: 70vh; cursor: default; overflow-y: auto; }
+        .manifesto-quote { color: #fff; font-size: 15px; font-weight: bold; margin-bottom: 10px; border-left: 4px solid #ff0000; padding-left: 12px; }
         .manifesto-body { color: #aaa; font-size: 13px; line-height: 1.7; margin-top: 20px; }
-        .manifesto-credits { margin-top: 20px; color: #ff0000; font-weight: 900; font-size: 12px; letter-spacing: 1px; }
+        .manifesto-credits { margin-top: 20px; color: #ff0000; font-weight: 900; font-size: 12px; }
 
         /* SAĞ SIDEBAR */
         #sidebar { 
@@ -55,20 +74,17 @@
         #sidebar.active { right: 0; }
         .close-btn { color: #ff0000; cursor: pointer; float: right; font-size: 35px; margin-top: -15px; }
 
-        /* GÖRSEL ALANI */
         #s-image-container {
             width: 100%; height: 220px; background: #000; border: 1px solid #333;
             margin-bottom: 15px; display: none; align-items: center; justify-content: center; overflow: hidden;
         }
-        #s-image-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.4s; }
-        #s-image-container img:hover { opacity: 1; }
+        #s-image-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
 
         #ai-prediction-box {
             background: #1a0000; border-left: 4px solid #ff0000;
             padding: 15px; margin: 15px 0; font-style: italic; color: #ffcccc; font-size: 13px;
         }
 
-        /* AI ANALİZ PANELİ */
         #ai-analysis-container {
             margin-top: 20px; padding: 15px; background: rgba(255, 0, 0, 0.1);
             border: 1px dashed #ff0000; border-radius: 8px;
@@ -78,13 +94,11 @@
             width: 100%; border-radius: 4px; cursor: pointer; font-weight: 900;
             margin-top: 10px; transition: 0.3s;
         }
-        #ai-btn:hover { background: #fff; color: #ff0000; }
+        #ai-btn:disabled { background: #333; cursor: not-allowed; }
         #ai-loader { display: none; text-align: center; margin: 10px 0; color: #ff0000; font-size: 12px; }
 
         @media (max-width: 768px) {
             #sidebar { width: 85vw; right: -90vw; padding: 20px; }
-            #manifesto-panel { width: 80vw; left: 10px; bottom: 10px; }
-            #manifesto-panel.expanded { width: 90vw; height: 80vh; left: 5vw; }
         }
 
         .marker-cluster div { background-color: rgba(255, 0, 0, 0.9); color: #fff; font-weight: bold; }
@@ -110,13 +124,9 @@
         <span id="m-quote" class="manifesto-quote">"Yurtta Sulh, Cihanda Sulh."</span>
         <div id="m-body" class="manifesto-body">
             <span id="m-text"></span>
-            <div class="manifesto-credits">
-                CURATION: TIMOR NIYAZI <br>
-                STRATEGY: ALFRED BÖHLER
-            </div>
-            <div style="margin-top:15px; color:#555; font-size: 10px;">CONTACT: timor.niyazi6@gmail.com</div>
+            <div class="manifesto-credits">CURATION: TIMOR NIYAZI | STRATEGY: ALFRED BÖHLER</div>
+            <div style="margin-top:15px; color:#555; font-size: 10px;">timor.niyazi6@gmail.com</div>
         </div>
-        <div id="m-hint" style="font-size: 9px; color: #444; margin-top: 10px;">[ Click to Read Testimony ]</div>
     </div>
 
     <div id="map"></div>
@@ -124,21 +134,14 @@
     <div id="sidebar">
         <span class="close-btn" onclick="closeAllPanels()">&times;</span>
         <div id="sidebar-content">
-            <div id="s-image-container">
-                <img id="s-image" src="" alt="Evidence">
-            </div>
-
-            <h2 id="s-title" style="color: #ff0000; font-size: 26px; font-weight: 900; margin-top: 0;">VERİ</h2>
+            <div id="s-image-container"><img id="s-image" src="" alt="Evidence"></div>
+            <h2 id="s-title" style="color: #ff0000; font-size: 24px; font-weight: 900; margin-top: 0;"></h2>
             <div id="s-date" style="color: #444; font-size: 14px; margin-bottom: 20px;"></div>
-            
-            <div id="ai-prediction-box">
-                <strong>PROJECTION:</strong> <span id="s-prediction"></span>
-            </div>
+            <div id="ai-prediction-box"><strong>PROJECTION:</strong> <span id="s-prediction"></span></div>
             <div id="s-details"></div>
-
             <div id="ai-analysis-container">
                 <h4 style="color: #ff0000; margin: 0 0 10px 0; font-size: 14px;"><i class="fas fa-robot"></i> AI FORENSIC ANALYST</h4>
-                <div id="ai-result-text" style="font-size: 12px; color: #ccc; line-height: 1.6;">Olayı derinlemesine analiz etmek için motoru başlatın.</div>
+                <div id="ai-result-text" style="font-size: 12px; color: #ccc; line-height: 1.6;">Olayı analiz etmek için başlatın.</div>
                 <div id="ai-loader"><i class="fas fa-cog fa-spin"></i> Desenler taranıyor...</div>
                 <button id="ai-btn" onclick="runAiAnalysis()">DERİN ANALİZİ BAŞLAT</button>
             </div>
@@ -157,28 +160,23 @@
         const translations = {
             tr: {
                 quote: `"Yurtta Sulh, Cihanda Sulh." <br><small>— Mustafa Kemal Atatürk</small>`,
-                text: `Bizler, <strong>Timor Niyazi</strong> ve <strong>Alfred Böhler</strong>, insanlığın en karanlık döngüsüne tanıklık ediyoruz...`
+                text: `Bizler, <strong>Timor Niyazi</strong> ve <strong>Alfred Böhler</strong>, insanlığın en karanlık döngüsüne tanıklık ediyoruz. Gerçekleri sansürsüz görmek, bu kanlı döngüyü kırmanın tek yoludur.`
             },
             en: {
                 quote: `"Peace at Home, Peace in the World." <br><small>— Mustafa Kemal Atatürk</small>`,
-                text: `We, <strong>Timor Niyazi</strong> and <strong>Alfred Böhler</strong>, bear witness to humanity's darkest loop...`
+                text: `We, <strong>Timor Niyazi</strong> and <strong>Alfred Böhler</strong>, bear witness to humanity's darkest loop. Seeing the raw, unredacted truth is the only way to break this bloody cycle.`
             },
             de: {
                 quote: `"Friede in der Heimat, Friede in der Welt." <br><small>— Mustafa Kemal Atatürk</small>`,
-                text: `Wir, <strong>Timor Niyazi</strong> und <strong>Alfred Böhler</strong>, bezeugen den dunkelsten Kreislauf der Menschheit...`
+                text: `Wir, <strong>Timor Niyazi</strong> und <strong>Alfred Böhler</strong>, bezeugen den dunkelsten Kreislauf der Menschheit. Die ungeschönte Wahrheit zu sehen, ist der einzige Weg.`
             }
         };
 
-        const map = L.map('map', { 
-            zoomSnap: 0.1, zoomDelta: 0.5, wheelPxPerZoomLevel: 50, attributionControl: false 
-        }).setView([20, 10], 2.5);
-
+        const map = L.map('map', { zoomSnap: 0.1, attributionControl: false }).setView([20, 10], 2.5);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
-        const oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 25 });
-        const clusterGroup = L.markerClusterGroup({ spiderfyOnMaxZoom: true, showCoverageOnHover: false });
-
-        map.on('click', function() { closeAllPanels(); });
+        const oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
+        const clusterGroup = L.markerClusterGroup();
 
         function closeAllPanels() {
             document.getElementById('sidebar').classList.remove('active');
@@ -187,8 +185,7 @@
 
         function toggleManifesto(e) {
             L.DomEvent.stopPropagation(e);
-            const panel = document.getElementById('manifesto-panel');
-            panel.classList.toggle('expanded');
+            document.getElementById('manifesto-panel').classList.toggle('expanded');
         }
 
         function changeLang(lang, e) {
@@ -202,28 +199,20 @@
 
         function updateSidebar(item) {
             lastSelected = item;
-            
-            // Başlık ve Tarih
             document.getElementById('s-title').innerText = item.name[currentLang];
             document.getElementById('s-date').innerText = "YEAR: " + item.start;
             document.getElementById('s-prediction').innerText = item.ai_prediction[currentLang];
             document.getElementById('ai-result-text').innerText = "Analiz için motoru başlatın.";
-
-            // Resim Güncelleme
+            
             const imgBox = document.getElementById('s-image-container');
             const img = document.getElementById('s-image');
-            if (item.q10_img) {
-                img.src = item.q10_img;
-                imgBox.style.display = 'flex';
-            } else {
-                imgBox.style.display = 'none';
-            }
+            if (item.q10_img) { img.src = item.q10_img; imgBox.style.display = 'flex'; } else { imgBox.style.display = 'none'; }
             
             let html = "";
             const d = item.details[currentLang];
             for (let i = 1; i <= 10; i++) {
                 if(d[`q${i}_title`]) {
-                    html += `<div style="margin-bottom:15px;"><div style="color:#fff; font-size:13px; font-weight:800; text-transform:uppercase;">${d[`q${i}_title`]}</div><div style="color:#999; font-size:12.5px; line-height:1.7;">${d[`q${i}_text`]}</div></div>`;
+                    html += `<div style="margin-bottom:15px;"><div style="color:#fff; font-size:13px; font-weight:800;">${d[`q${i}_title`]}</div><div style="color:#999; font-size:12.5px;">${d[`q${i}_text`]}</div></div>`;
                 }
             }
             document.getElementById('s-details').innerHTML = html;
@@ -250,7 +239,7 @@
                 const data = await response.json();
                 resText.innerText = data.candidates[0].content.parts[0].text;
             } catch (err) {
-                resText.innerText = "Sistem meşgul veya bağlantı hatası.";
+                resText.innerText = "Hata: YZ şu an meşgul.";
             } finally {
                 resText.style.display = 'block';
                 loader.style.display = 'none';
@@ -260,17 +249,15 @@
 
         async function startApp() {
             changeLang('tr');
-            try {
-                const response = await fetch('archive_data.json');
-                const fullData = await response.json();
-                fullData.forEach(item => {
-                    const marker = L.circleMarker([item.lat, item.lng], { radius: 6, fillColor: "#ff0000", color: "#fff", weight: 0.5, fillOpacity: 0.8 });
-                    marker.on('click', (e) => { L.DomEvent.stopPropagation(e); updateSidebar(item); map.flyTo([item.lat, item.lng], 8); });
-                    oms.addMarker(marker);
-                    clusterGroup.addLayer(marker);
-                });
-                map.addLayer(clusterGroup);
-            } catch (err) { console.error("JSON Hatası."); }
+            const response = await fetch('archive_data.json');
+            const fullData = await response.json();
+            fullData.forEach(item => {
+                const marker = L.circleMarker([item.lat, item.lng], { radius: 6, fillColor: "#ff0000", color: "#fff", weight: 1, fillOpacity: 0.8 });
+                marker.on('click', (e) => { L.DomEvent.stopPropagation(e); updateSidebar(item); map.flyTo([item.lat, item.lng], 8); });
+                oms.addMarker(marker);
+                clusterGroup.addLayer(marker);
+            });
+            map.addLayer(clusterGroup);
         }
         startApp();
     </script>
