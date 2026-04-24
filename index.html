@@ -14,7 +14,7 @@
         body { margin: 0; padding: 0; background: #050505; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
         #map { height: 100vh; width: 100vw; background: #000; z-index: 1; }
 
-        /* SOL ÜST: KONTROLLER */
+        /* KONTROLLER */
         #left-controls {
             position: fixed; top: 20px; left: 20px; z-index: 10001;
             display: flex; flex-direction: column; gap: 10px;
@@ -32,24 +32,24 @@
 
         /* MANİFESTO PANELİ */
         #manifesto-panel {
-            position: fixed; bottom: 20px; left: 20px; width: 350px;
+            position: fixed; bottom: 20px; left: 20px; width: 400px;
             background: rgba(5, 5, 5, 0.98); border: 2px solid #ff0000;
             padding: 20px; z-index: 10005; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             cursor: pointer; box-shadow: 0 0 30px #000;
         }
-        #manifesto-panel.expanded { width: 450px; max-height: 80vh; cursor: default; overflow-y: auto; }
-        .manifesto-quote { color: #fff; font-size: 15px; font-weight: bold; margin-bottom: 5px; border-left: 4px solid #ff0000; padding-left: 12px; display: block; }
-        .manifesto-subquote { color: #666; font-size: 12px; margin-bottom: 15px; display: block; padding-left: 16px; }
-        .manifesto-body { color: #aaa; font-size: 13px; line-height: 1.6; margin-top: 15px; display: none; }
+        #manifesto-panel.expanded { width: 450px; max-height: 85vh; cursor: default; overflow-y: auto; }
+        .manifesto-quote { color: #fff; font-size: 16px; font-weight: bold; margin-bottom: 5px; border-left: 4px solid #ff0000; padding-left: 12px; display: block; }
+        .manifesto-subquote { color: #666; font-size: 13px; margin-bottom: 15px; display: block; padding-left: 16px; }
+        .manifesto-body { color: #aaa; font-size: 13.5px; line-height: 1.7; margin-top: 15px; display: none; }
         #manifesto-panel.expanded .manifesto-body { display: block; }
-        .manifesto-credits { margin-top: 20px; color: #ff0000; font-weight: 900; font-size: 11px; line-height: 1.5; }
-        .m-hint { font-size: 9px; color: #444; margin-top: 10px; text-transform: uppercase; }
+        .manifesto-credits { margin-top: 25px; color: #ff0000; font-weight: 900; font-size: 11px; line-height: 1.6; border-top: 1px solid #222; padding-top: 15px; }
+        .m-hint { font-size: 10px; color: #444; margin-top: 15px; font-weight: bold; }
 
         /* SAĞ SIDEBAR */
         #sidebar { 
             position: fixed; top: 0; right: -500px; width: 450px; height: 100%; 
             background: rgba(5, 5, 5, 0.98); border-left: 2px solid #ff0000;
-            z-index: 10002; transition: 0.5s ease-in-out; 
+            z-index: 10002; transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1); 
             padding: 30px; overflow-y: auto; box-shadow: -20px 0 50px #000;
         }
         #sidebar.active { right: 0; }
@@ -73,11 +73,11 @@
         #ai-loader { display: none; text-align: center; margin: 10px 0; color: #ff0000; }
 
         @media (max-width: 768px) {
-            #sidebar { width: 90vw; right: -100vw; }
+            #sidebar { width: 85vw; right: -100vw; }
             #manifesto-panel { width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center; }
             #manifesto-panel::before { content: "\f129"; font-family: "Font Awesome 5 Free"; font-weight: 900; color: #ff0000; font-size: 20px; }
             #manifesto-panel .manifesto-quote, #manifesto-panel .manifesto-subquote, #manifesto-panel .m-hint, #manifesto-panel .manifesto-body { display: none; }
-            #manifesto-panel.expanded { width: 85vw; height: auto; padding: 20px; left: 7.5vw; bottom: 5vh; display: block; }
+            #manifesto-panel.expanded { width: 90vw; height: auto; padding: 20px; left: 5vw; bottom: 5vh; display: block; border-radius: 8px; }
             #manifesto-panel.expanded::before { display: none; }
             #manifesto-panel.expanded .manifesto-quote, #manifesto-panel.expanded .manifesto-subquote, #manifesto-panel.expanded .manifesto-body { display: block; }
         }
@@ -98,14 +98,14 @@
     </div>
 
     <div id="manifesto-panel" onclick="toggleManifesto(event)">
-        <span id="m-quote" class="manifesto-quote">"Yurtta Sulh, Cihanda Sulh."</span>
-        <span id="m-sub" class="manifesto-subquote">— Mustafa Kemal Atatürk</span>
+        <span class="manifesto-quote">"Yurtta Sulh, Cihanda Sulh."</span>
+        <span class="manifesto-subquote">— Mustafa Kemal Atatürk</span>
         <div class="manifesto-body">
             <span id="m-text"></span>
             <div class="manifesto-credits">
                 CURATION: TIMOR NIYAZI<br>
                 STRATEGY: ALFRED BÖHLER<br>
-                CONTACT: <span style="color:#fff">timor.niyazi6@gmail.com</span>
+                CONTACT: timor.niyazi6@gmail.com
             </div>
         </div>
         <div class="m-hint" id="m-hint">[ Click to Read Testimony ]</div>
@@ -116,10 +116,10 @@
     <div id="sidebar">
         <span class="close-btn" onclick="closeAllPanels()">&times;</span>
         <div id="sidebar-content">
-            <div id="s-image-container"><img id="s-image" src="" alt="Historical Evidence"></div>
+            <div id="s-image-container"><img id="s-image" src="" alt="Evidence"></div>
             <h2 id="s-title" style="color:#ff0000; font-size:24px; font-weight:900; margin-top:0;"></h2>
             <div id="s-date" style="color:#444; font-size:14px; margin-bottom:20px;"></div>
-            <div id="s-details" style="color:#999; font-size:13px; line-height:1.6;"></div>
+            <div id="s-details" style="color:#ccc; font-size:13px;"></div>
             
             <div id="ai-analysis-container">
                 <h4 style="color:#ff0000; margin:0; font-size:14px;"><i class="fas fa-robot"></i> AI FORENSIC ANALYST</h4>
@@ -143,10 +143,10 @@
                 text: `Bizler, <strong>Timor Niyazi</strong> ve <strong>Alfred Böhler</strong>, insanlığın en karanlık döngüsüne tanıklık ediyoruz. İkinci Dünya Savaşı'nda katledilen milyonlardan sonra dünyanın ders aldığı illüzyonu, tarihin en trajik yanılgısıdır. Eğer insanlık Birinci Dünya Savaşı'nın dehşetini gerçekten anlasaydı, ikincisi asla gerçekleşmezdi. Oysa açgözlülük, bitmek bilmeyen petrol hırsı ve mutlak hegemonya arayışı, insan hayatını sadece istatistiklere indirgedi.<br><br>Bugün bir babanın evladını kaybetmesi, ana akım medya tarafından "stratejik çıkarlar" veya "istenmeyen hasar" adı altında sterilize edilip basitleştiriliyor. Bu proje, yalanları söküp atan dijital bir anıttır. Demokrasi getirme maskesi altında yürütülen vekalet savaşlarını, kaynak hırsızlıklarını ve katliamları ifşa eder. Barışın sadece bir dilek değil, bir zorunluluk olduğuna inanıyoruz. Gerçekleri sansürsüz görmek, bu kanlı döngüyü kırmanın tek yoludur.`
             },
             en: {
-                text: `We, <strong>Timor Niyazi</strong> and <strong>Alfred Böhler</strong>, bear witness to humanity's darkest loop. The illusion that the world learned its lesson after WWII is history's most tragic fallacy. Insatiable hunger for oil and the quest for absolute hegemony have reduced human life to mere statistics.<br><br>Today, a father losing his child is sanitized by global media as strategic interest. This project is a digital monument that strips away the lies. Peace is not a wish, it is a necessity.`
+                text: `We, <strong>Timor Niyazi</strong> and <strong>Alfred Böhler</strong>, bear witness to humanity's darkest loop. The illusion that the world learned its lesson after WWII is history's most tragic fallacy. Insatiable hunger for oil and the quest for absolute hegemony have reduced human life to statistics.<br><br>Today, a father losing his child is sanitized by global media as "strategic interests." This project is a digital monument. Peace is not just a wish, it is a necessity. Seeing the raw, unredacted truth is the only way to break this bloody cycle.`
             },
             de: {
-                text: `Wir, <strong>Timor Niyazi</strong> und <strong>Alfred Böhler</strong>, bezeugen den dunkelsten Kreislauf der Menschheit. Gier und das Streben nach absoluter Hegemonie haben Menschenleben zu bloßen Statistiken degradiert. Die ungeschönte Wahrheit zu sehen, ist der einzige Weg.`
+                text: `Wir, <strong>Timor Niyazi</strong> und <strong>Alfred Böhler</strong>, bezeugen den dunkelsten Kreislauf der Menschheit. Der Irrtum, die Welt habe nach dem Zweiten Weltkrieg gelernt, ist fatal. Gier und das Streben nach absoluter Hegemonie haben Menschenleben zu Statistiken degradiert. Die ungeschönte Wahrheit zu sehen, ist der einzige Weg.`
             }
         };
 
@@ -154,7 +154,7 @@
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
         const clusterGroup = L.markerClusterGroup();
 
-        // HARİTAYA TIKLAYINCA HER ŞEYİ KAPAT
+        // HARİTAYA TIKLAYINCA KAPATMA
         map.on('click', function() { closeAllPanels(); });
 
         function closeAllPanels() {
@@ -187,11 +187,11 @@
             const img = document.getElementById('s-image');
             if (item.q10_img) { img.src = item.q10_img; imgBox.style.display = 'flex'; } else { imgBox.style.display = 'none'; }
             
-            let html = `<div style="background:#1a0000; border-left:4px solid #ff0000; padding:15px; margin-bottom:20px; font-style:italic;"><strong>PROJECTION:</strong> ${item.ai_prediction[currentLang]}</div>`;
+            let html = `<div style="background:#1a0000; border-left:4px solid #ff0000; padding:15px; margin-bottom:20px; font-style:italic; font-size:12px;"><strong>PROJECTION:</strong> ${item.ai_prediction[currentLang]}</div>`;
             const d = item.details[currentLang];
             for (let i = 1; i <= 10; i++) {
                 if(d[`q${i}_title`]) {
-                    html += `<div style="margin-bottom:15px;"><div style="color:#fff; font-size:13px; font-weight:800; text-transform:uppercase;">${d[`q${i}_title`]}</div><div style="color:#999; font-size:12.5px;">${d[`q${i}_text`]}</div></div>`;
+                    html += `<div style="margin-bottom:15px;"><div style="color:#fff; font-size:13px; font-weight:800; text-transform:uppercase;">${d[`q${i}_title`]}</div><div style="color:#999; font-size:12.5px; line-height:1.6;">${d[`q${i}_text`]}</div></div>`;
                 }
             }
             document.getElementById('s-details').innerHTML = html;
@@ -208,7 +208,7 @@
             btn.disabled = true;
 
             try {
-                const prompt = `Profesyonel bir adli analiz uzmanı gibi şu vakayı değerlendir: ${lastSelected.name[currentLang]}. Detaylar: ${JSON.stringify(lastSelected.details[currentLang])}. Bu olayın idari suç boyutunu ve tarihteki gerçek yerini kısa ve sarsıcı şekilde Türkçe açıkla.`;
+                const prompt = `Analiz Et: ${lastSelected.name[currentLang]}. Detaylar: ${JSON.stringify(lastSelected.details[currentLang])}. Bu olayın idari suç boyutunu profesyonel ve sarsıcı bir dille Türkçe açıkla.`;
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -228,7 +228,7 @@
                 const marker = L.circleMarker([item.lat, item.lng], { radius: 6, fillColor: "#ff0000", color: "#fff", weight: 1, fillOpacity: 0.8 });
                 marker.on('click', (e) => { 
                     L.DomEvent.stopPropagation(e); 
-                    closeAllPanels(); // Önce diğerlerini kapat
+                    closeAllPanels();
                     updateSidebar(item); 
                     map.flyTo([item.lat, item.lng], 7); 
                 });
