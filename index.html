@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
     <style>
         body { margin: 0; padding: 0; background: #050505; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
@@ -30,7 +31,7 @@
         .lang-btn.active, .zoom-btn:hover { color: #ff0000; text-shadow: 0 0 8px #ff0000; }
         .zoom-btn { font-size: 20px; border-top: 1px solid #222; padding-top: 5px; }
 
-        /* MANİFESTO PANELİ: AÇILIR KAPANIR DEV PANEL */
+        /* MANİFESTO PANELİ */
         #manifesto-panel {
             position: fixed; bottom: 20px; left: 20px; width: 350px;
             background: rgba(5, 5, 5, 0.98); border: 2px solid #ff0000;
@@ -41,8 +42,7 @@
             width: 45vw; height: 70vh; cursor: default; overflow-y: auto;
         }
         .manifesto-quote { color: #fff; font-size: 15px; font-weight: bold; display: block; margin-bottom: 10px; border-left: 4px solid #ff0000; padding-left: 12px; }
-        .manifesto-body { color: #aaa; font-size: 13px; line-height: 1.7; display: none; margin-top: 20px; }
-        #manifesto-panel.expanded .manifesto-body { display: block; }
+        .manifesto-body { color: #aaa; font-size: 13px; line-height: 1.7; margin-top: 20px; }
         .manifesto-credits { margin-top: 20px; color: #ff0000; font-weight: 900; font-size: 12px; letter-spacing: 1px; }
 
         /* SAĞ SIDEBAR (DOSYA DETAYLARI) */
@@ -60,16 +60,25 @@
             padding: 15px; margin: 20px 0; font-style: italic; color: #ffcccc; font-size: 13px;
         }
 
-        /* --- RESPONSIVE (MOBİL VE TABLET) TASARIM --- */
+        /* AI ANALİZ PANELİ */
+        #ai-analysis-container {
+            margin-top: 20px; padding: 15px; background: rgba(255, 0, 0, 0.1);
+            border: 1px dashed #ff0000; border-radius: 8px;
+        }
+        #ai-btn {
+            background: #ff0000; color: white; border: none; padding: 10px;
+            width: 100%; border-radius: 4px; cursor: pointer; font-weight: 900;
+            margin-top: 10px; transition: 0.3s;
+        }
+        #ai-btn:hover { background: #fff; color: #ff0000; }
+        #ai-loader { display: none; text-align: center; margin: 10px 0; color: #ff0000; font-size: 12px; }
+
         @media (max-width: 768px) {
             #sidebar { width: 85vw; right: -90vw; padding: 20px; }
             #manifesto-panel { width: 80vw; left: 10px; bottom: 10px; }
             #manifesto-panel.expanded { width: 90vw; height: 80vh; left: 5vw; }
-            .sidebar-title { font-size: 20px; }
-            #left-controls { top: 10px; left: 10px; }
         }
 
-        /* Marker ve Cluster Stilleri */
         .marker-cluster div { background-color: rgba(255, 0, 0, 0.9); color: #fff; font-weight: bold; }
         .marker-cluster { background-color: rgba(255, 0, 0, 0.1); }
         .leaflet-control-zoom { display: none; }
@@ -113,6 +122,13 @@
                 <strong>PROJECTION:</strong> <span id="s-prediction"></span>
             </div>
             <div id="s-details"></div>
+
+            <div id="ai-analysis-container">
+                <h4 style="color: #ff0000; margin: 0 0 10px 0; font-size: 14px;"><i class="fas fa-robot"></i> AI FORENSIC ANALYST</h4>
+                <div id="ai-result-text" style="font-size: 12px; color: #ccc; line-height: 1.6;">Olayı derinlemesine analiz etmek için motoru başlatın.</div>
+                <div id="ai-loader"><i class="fas fa-cog fa-spin"></i> Desenler taranıyor...</div>
+                <button id="ai-btn" onclick="runAiAnalysis()">DERİN ANALİZİ BAŞLAT</button>
+            </div>
         </div>
     </div>
 
@@ -123,19 +139,20 @@
     <script>
         let currentLang = 'tr';
         let lastSelected = null;
+        const apiKey = "AIzaSyDgXjOXjDuTENAALOAknM-_jVpxxV1rg8w";
 
         const translations = {
             tr: {
                 quote: `"Yurtta Sulh, Cihanda Sulh." <br><small>— Mustafa Kemal Atatürk</small>`,
-                text: `Bizler, <strong>Timor Niyazi</strong> ve <strong>Alfred Böhler</strong>, insanlığın en karanlık döngüsüne tanıklık ediyoruz. İkinci Dünya Savaşı'nda katledilen milyonlardan sonra dünyanın ders aldığı illüzyonu, tarihin en trajik yanılgısıdır. Eğer insanlık Birinci Dünya Savaşı'nın dehşetini gerçekten anlasaydı, ikincisi asla gerçekleşmezdi. Oysa açgözlülük, bitmek bilmeyen petrol hırsı ve mutlak hegemonya arayışı, insan hayatını sadece istatistiklere indirgedi.<br><br>Bugün bir babanın evladını kaybetmesi, ana akım medya tarafından "stratejik çıkarlar" veya "istenmeyen hasar" adı altında sterilize edilip basitleştiriliyor. Bu proje, yalanları söküp atan dijital bir anıttır. Demokrasi getirme maskesi altında yürütülen vekalet savaşlarını, kaynak hırsızlıklarını ve katliamları ifşa eder. Barışın sadece bir dilek değil, bir zorunluluk olduğuna inanıyoruz. Gerçekleri sansürsüz görmek, bu kanlı döngüyü kırmanın tek yoludur.`
+                text: `Bizler, <strong>Timor Niyazi</strong> ve <strong>Alfred Böhler</strong>, insanlığın en karanlık döngüsüne tanıklık ediyoruz...`
             },
             en: {
                 quote: `"Peace at Home, Peace in the World." <br><small>— Mustafa Kemal Atatürk</small>`,
-                text: `We, <strong>Timor Niyazi</strong> and <strong>Alfred Böhler</strong>, bear witness to humanity's darkest loop. The illusion that the world learned its lesson after WWII is history's most tragic fallacy. If humanity had truly understood the horror of WWI, WWII would never have occurred. Yet, greed, the insatiable hunger for oil, and the quest for absolute hegemony have reduced human life to mere statistics.<br><br>Today, a father losing his child is sanitized and simplified by global media under the guise of strategic interests or collateral damage. This project is a digital monument that strips away the lies of mainstream media. It exposes proxy wars, resource thefts, and massacres masked as bringing democracy. We believe peace is not just a wish, but a necessity. Seeing the raw, unredacted truth is the only way to break this bloody cycle.`
+                text: `We, <strong>Timor Niyazi</strong> and <strong>Alfred Böhler</strong>, bear witness to humanity's darkest loop...`
             },
             de: {
                 quote: `"Friede in der Heimat, Friede in der Welt." <br><small>— Mustafa Kemal Atatürk</small>`,
-                text: `Wir, <strong>Timor Niyazi</strong> und <strong>Alfred Böhler</strong>, bezeugen den dunkelsten Kreislauf der Menschheit. Die Illusion, die Welt hätte nach den Millionen Toten des Zweiten Weltkriegs gelernt, ist der tragischste Irrtum der Geschichte. Hätte die Menschheit das Grauen des Ersten Weltkriegs wirklich verstanden, wäre der Zweite nie geschehen. Doch Gier, der unersättliche Hunger nach Öl und das Streben nach absoluter Hegemonie haben Menschenleben zu bloßen Statistiken degradiert.<br><br>Dieses Projekt ist ein digitales Monument, das die Lügen der Mainstream-Medien entlarvt. Es zeigt die Stellvertreterkriege, den Ressourcenraub und die Massaker auf, die als Demokratisierung getarnt werden. Wir glauben, dass Frieden keine bloße Hoffnung, sondern eine Notwendigkeit ist. Die ungeschönte Wahrheit zu sehen, ist der einzige Weg, diesen blutigen Kreislauf zu durchbrechen.`
+                text: `Wir, <strong>Timor Niyazi</strong> und <strong>Alfred Böhler</strong>, bezeugen den dunkelsten Kreislauf der Menschheit...`
             }
         };
 
@@ -148,7 +165,6 @@
         const oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 25 });
         const clusterGroup = L.markerClusterGroup({ spiderfyOnMaxZoom: true, showCoverageOnHover: false });
 
-        // Haritaya tıklanınca her şeyi kapat (Marker'a tıklanmadıkça)
         map.on('click', function() { closeAllPanels(); });
 
         function closeAllPanels() {
@@ -159,7 +175,6 @@
         function toggleManifesto(e) {
             L.DomEvent.stopPropagation(e);
             const panel = document.getElementById('manifesto-panel');
-            if (e.target.closest('.manifesto-body') && panel.classList.contains('expanded')) return;
             panel.classList.toggle('expanded');
         }
 
@@ -177,6 +192,8 @@
             document.getElementById('s-title').innerText = item.name[currentLang];
             document.getElementById('s-date').innerText = "YEAR: " + item.start;
             document.getElementById('s-prediction').innerText = item.ai_prediction[currentLang];
+            document.getElementById('ai-result-text').innerText = "Analiz için motoru başlatın.";
+            
             let html = "";
             const d = item.details[currentLang];
             for (let i = 1; i <= 10; i++) {
@@ -186,6 +203,34 @@
             }
             document.getElementById('s-details').innerHTML = html;
             document.getElementById('sidebar').classList.add('active');
+        }
+
+        async function runAiAnalysis() {
+            if(!lastSelected) return;
+            const resText = document.getElementById('ai-result-text');
+            const loader = document.getElementById('ai-loader');
+            const btn = document.getElementById('ai-btn');
+
+            resText.style.display = 'none';
+            loader.style.display = 'block';
+            btn.disabled = true;
+
+            try {
+                const prompt = `Analiz Et: ${lastSelected.name[currentLang]}. Detaylar: ${JSON.stringify(lastSelected.details[currentLang])}. Bu olayın idari suç ve küresel etkisini profesyonel bir dille açıkla.`;
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await response.json();
+                resText.innerText = data.candidates[0].content.parts[0].text;
+            } catch (err) {
+                resText.innerText = "Bağlantı hatası.";
+            } finally {
+                resText.style.display = 'block';
+                loader.style.display = 'none';
+                btn.disabled = false;
+            }
         }
 
         async function startApp() {
@@ -200,7 +245,7 @@
                     clusterGroup.addLayer(marker);
                 });
                 map.addLayer(clusterGroup);
-            } catch (err) { console.error("Error loading JSON."); }
+            } catch (err) { console.error("JSON Hatası."); }
         }
         startApp();
     </script>
